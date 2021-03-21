@@ -61,8 +61,8 @@ defmodule TranslaTable do
         unquote(changeset)
       end
 
-      def cast_translation() do
-        cast_assoc(:translations, with: &Translation.changeset/2)
+      def cast_translation(changeset) do
+        cast_assoc(changeset, :translations, with: &Translation.changeset/2)
       end
     end
   end
