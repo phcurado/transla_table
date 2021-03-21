@@ -60,6 +60,10 @@ defmodule TranslaTable do
         unquote(contents)
         unquote(changeset)
       end
+
+      def cast_translation() do
+        cast_assoc(:translations, with: &Translation.changeset/2)
+      end
     end
   end
 end
