@@ -5,10 +5,12 @@ defmodule TranslaTable.MixProject do
     [
       app: :transla_table,
       description: "TranslaTable is a library for helping create translation schemas.",
-      version: "0.1.0",
+      version: "0.1.1",
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      elixirc_paths: elixirc_paths(Mix.env()),
+      deps: deps(),
+      aliases: aliases()
     ]
   end
 
@@ -18,10 +20,19 @@ defmodule TranslaTable.MixProject do
     ]
   end
 
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
+
   defp deps do
     [
       {:ecto_sql, ">= 3.4.0"},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
+    ]
+  end
+
+  defp aliases do
+    [
+     test: ["ecto.create --quiet", "ecto.migrate", "test"]
     ]
   end
 end
