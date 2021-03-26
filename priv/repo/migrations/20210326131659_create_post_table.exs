@@ -1,9 +1,9 @@
-defmodule TranslaTable.Repo.Migrations.CreateTestSchema do
+defmodule TranslaTable.Repo.Migrations.CreatePost do
   use Ecto.Migration
 
   def change do
-    create table("test_schema") do
-      add :name, :string, size: 40
+    create table("post") do
+      add :title, :string, size: 40
       add :description, :string, size: 255
       add :author, :string
       add :slug, :string, size: 20

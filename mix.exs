@@ -26,13 +26,14 @@ defmodule TranslaTable.MixProject do
   defp deps do
     [
       {:ecto_sql, ">= 3.4.0"},
-      {:credo, "~> 1.5", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
+      {:postgrex, "~> 0.15.8", only: [:test]}
     ]
   end
 
   defp aliases do
     [
-     test: ["ecto.create --quiet", "ecto.migrate", "test"]
+     test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
     ]
   end
 end

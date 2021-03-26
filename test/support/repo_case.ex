@@ -9,8 +9,6 @@ defmodule TranslaTable.RepoCase do
       import Ecto
       import Ecto.Query
       import TranslaTable.RepoCase
-
-      # and any other stuff
     end
   end
 
