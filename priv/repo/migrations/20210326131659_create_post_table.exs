@@ -1,4 +1,4 @@
-defmodule TranslaTable.Repo.Migrations.CreatePost do
+defmodule TranslaTable.Repo.Migrations.CreatePostTable do
   use Ecto.Migration
 
   def change do

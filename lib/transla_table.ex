@@ -62,7 +62,7 @@ defmodule TranslaTable do
         @foreign_key_type @pk_type
         schema "#{@table}_translation" do
           belongs_to String.to_atom(@table), @module, primary_key: true
-          belongs_to :language, @lang_mod, type: :string, primary_key: true
+          belongs_to :language, @lang_mod, type: @pk_type, primary_key: true
 
           Enum.each(@fields, fn {f, t} ->
             field f, t
