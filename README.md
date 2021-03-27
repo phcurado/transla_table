@@ -1,5 +1,8 @@
 # TranslaTable
 
+Ecto based project for create translation schema and query data.
+See the documentation on [HexDocs](https://hexdocs.pm/transla_table)
+
 ## Installation
 
 Add the `TranslaTable` package in your `mix.exs`:
@@ -7,7 +10,7 @@ Add the `TranslaTable` package in your `mix.exs`:
 ```elixir
 def deps do
   [
-    {:transla_table, git:  "https://github.com/phcurado/transla_table"}
+    {:transla_table, "~> 0.2.0"}
   ]
 end
 ```
