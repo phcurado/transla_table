@@ -31,21 +31,19 @@ defmodule TranslaTable.SchemaTest do
 
   test "Assert valid arguments" do
     assert {
-      EctoSchema,
-      "ecto_schema",
+      {EctoSchema, :id},
+      :ecto_schema,
       [{:name, :string}],
-      {:id, :id},
-      TranslaTable.Lang
+      {TranslaTable.Lang, :id}
     } = Schema.compile_args([module: EctoSchema, fields: [:name]])
   end
 
   test "Assert custom Module arguments" do
     assert {
-      EctoRelationSchema,
-      "ecto_relation_schema",
+      {EctoRelationSchema, :binary_id},
+      :ecto_relation_schema,
       [{:name, :string}, {:description, :string}],
-      {:id_legacy, :binary_id},
-      TranslaTable.Lang
+      {TranslaTable.Lang, :id}
     } = Schema.compile_args([module: EctoRelationSchema, fields: [:name, :description]])
   end
 

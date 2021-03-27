@@ -45,12 +45,17 @@ defmodule TranslaTable do
   defmacro __using__(opts) do
     prepare =
       quote bind_quoted: [opts: opts] do
-        {module, table, fields, {_id, pk_type}, lang_mod} = TranslaTable.Schema.compile_args(opts)
+        {{module, pk_type}, table, fields, {lang_mod, pk_lang_type}} = TranslaTable.Schema.compile_args(opts)
         @module module
+        @pk_type pk_type
         @table table
         @fields fields
-        @pk_type pk_type
         @lang_mod lang_mod
+        @pk_lang_type pk_lang_type
+
+        def __trans_schema__(:fields), do: @fields
+        def __trans_schema__(:table), do: @table
+        def __trans_schema__(:table_foreign_id), do: Atom.to_string(@table) <> "_id"
       end
 
     contents =
@@ -61,8 +66,8 @@ defmodule TranslaTable do
         @primary_key false
         @foreign_key_type @pk_type
         schema "#{@table}_translation" do
-          belongs_to String.to_atom(@table), @module, primary_key: true
-          belongs_to :language, @lang_mod, type: @pk_type, primary_key: true
+          belongs_to @table, @module, primary_key: true
+          belongs_to :language, @lang_mod, type: @pk_lang_type, primary_key: true
 
           Enum.each(@fields, fn {f, t} ->
             field f, t

@@ -20,13 +20,14 @@ defmodule TranslaTable.Schema do
       raise ArgumentError, "invalid Ecto language module"
     end
 
-    pk_type = primary_key_type(module)
+    {_id, pk_type} = primary_key_type(module)
+    {_id, pk_lang_type} = primary_key_type(lang_mod)
 
-    table = Keyword.get(opts, :table, module.__schema__(:source))
+    table = Keyword.get(opts, :table, module.__schema__(:source)) |> String.to_atom()
 
     fields = get_ecto_field!(module, Keyword.fetch!(opts, :fields))
 
-    {module, table, fields, pk_type, lang_mod}
+    {{module, pk_type}, table, fields, {lang_mod, pk_lang_type}}
   end
 
   defp get_ecto_field!(mod, fields) when is_list(fields) do
@@ -58,8 +59,4 @@ defmodule TranslaTable.Schema do
         nil
     end
   end
-end
-
-defmodule Asdf do
-
 end
