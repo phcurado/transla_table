@@ -4,7 +4,7 @@ defmodule TranslaTable.Query do
   """
 
   @doc """
-  Create a query for localizing an entity from database.
+  Create a query for localize an entity from database.
 
   ## Example
     To run this, you need to compose your query with the localize function.
@@ -15,18 +15,22 @@ defmodule TranslaTable.Query do
 
     You can create your own functions for composing queries.
 
-      defmodule MyApp.Blog do
+      defmodule MyApp.Blog.Post do
+        import Ecto.Query
         import TranslaTable.Query
-        alias MyApp.BlogTranslation
+        alias MyApp.Post
+        alias MyApp.PostTranslation
+        alias MyApp.Repo
 
-        def run(filters \\ %{}) do
+        def run(filters) do
           base_query()
-          |> localize_query(filters["lang"], BlogTranslation)
+          |> localize_query(filters["lang"], PostTranslation)
           |> filter_by_title(filters)
+          |> Repo.all()
         end
 
         def base_query() do
-          from b in Blog
+          from b in Post
         end
 
         def filter_by_title(query, %{title: title}) do

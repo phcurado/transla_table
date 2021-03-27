@@ -1,7 +1,5 @@
 defmodule TranslaTable do
   @moduledoc """
-  Documentation for `TranslaTable`.
-
   `TranslaTable` is a helper library for creating a translation schema inside your ecto schema.
 
   ## Translation
@@ -32,10 +30,15 @@ defmodule TranslaTable do
         end
       end
 
+    Then create the translation module
+
       defmodule MyApp.PostTranslation
+        alias MyApp.Post
+        alias MyApp.Language
+
         use TranslaTable,
-          module: MyApp.Blog, # Module to be translated
-          lang_mod: MyApp.Language, # Language schema table
+          module: Post, # Module to be translated
+          lang_mod: Language, # Language schema table
           fields: [:title, :description, :slug]
       end
 
