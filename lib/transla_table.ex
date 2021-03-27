@@ -52,10 +52,11 @@ defmodule TranslaTable do
         @fields fields
         @lang_mod lang_mod
         @pk_lang_type pk_lang_type
+        @table_foreign_id (Atom.to_string(@table) <> "_id") |> String.to_existing_atom()
 
-        def __trans_schema__(:fields), do: @fields
+        def __trans_schema__(:fields), do: @fields |> Enum.map(fn {field, _type} -> field end)
         def __trans_schema__(:table), do: @table
-        def __trans_schema__(:table_foreign_id), do: Atom.to_string(@table) <> "_id"
+        def __trans_schema__(:table_foreign_id), do: @table_foreign_id
       end
 
     contents =

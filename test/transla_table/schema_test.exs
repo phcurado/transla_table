@@ -2,6 +2,7 @@ defmodule TranslaTable.SchemaTest do
   use ExUnit.Case
 
   alias TranslaTable.Schema
+  alias TranslaTable.Fixture.Schema.Lang
 
   defmodule EctoSchema do
     use Ecto.Schema
@@ -34,7 +35,7 @@ defmodule TranslaTable.SchemaTest do
       {EctoSchema, :id},
       :ecto_schema,
       [{:name, :string}],
-      {TranslaTable.Lang, :id}
+      {Lang, :id}
     } = Schema.compile_args([module: EctoSchema, fields: [:name]])
   end
 
@@ -43,13 +44,13 @@ defmodule TranslaTable.SchemaTest do
       {EctoRelationSchema, :binary_id},
       :ecto_relation_schema,
       [{:name, :string}, {:description, :string}],
-      {TranslaTable.Lang, :id}
+      {Lang, :id}
     } = Schema.compile_args([module: EctoRelationSchema, fields: [:name, :description]])
   end
 
   test "Invalid Ecto key :user field" do
     assert_raise ArgumentError, "invalid :user key in Schema fields", fn ->
-      Schema.compile_args([module: EctoSchema,fields: [:user]])
+      Schema.compile_args([module: EctoSchema, fields: [:user]])
     end
 
     assert_raise ArgumentError, "invalid :user key in Schema fields", fn ->

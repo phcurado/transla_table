@@ -1,4 +1,6 @@
-defmodule TranslaTable.Lang do
+defmodule TranslaTable.Fixture.Schema.Lang do
+  @moduledoc false
+
   use Ecto.Schema
 
   schema "language" do

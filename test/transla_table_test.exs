@@ -1,5 +1,7 @@
 defmodule TranslaTableTest do
   use TranslaTable.RepoCase
+  alias TranslaTable.Fixture.{Post, Lang}
+
   doctest TranslaTable
 
   @new_post %{
@@ -7,40 +9,11 @@ defmodule TranslaTableTest do
     description: "Description",
   }
 
-  defmodule Post do
-    use Ecto.Schema
-    import Ecto.Changeset
-    import TranslaTable
+  setup [:seed_lang]
 
-    alias TranslaTableTest.PostTranslation
-
-    schema "post" do
-      field :title, :string
-      field :description, :string
-      field :author, :string
-      field :slug, :string
-
-      has_many_translations(PostTranslation)
-
-      timestamps()
-    end
-
-    @doc false
-    def changeset(post, attrs) do
-      post
-      |> cast(attrs, [:title, :description, :author, :slug])
-      |> cast_translation(PostTranslation)
-    end
-  end
-
-  defmodule PostTranslation do
-    use TranslaTable,
-      module: TranslaTableTest.Post,
-      fields: [:title, :description, :slug]
-  end
-
-  test "add post with translation", %{en: en, pt: pt} do
-    post_with_translations = Map.put(@new_post, :translations, [
+  test "add post with translation", %{lang: lang} do
+    %{en: en, pt: pt} = lang
+    post_attrs = Map.put(@new_post, :translations, [
       %{
         language_id: pt.id,
         title: "Post do Blog",
@@ -53,9 +26,7 @@ defmodule TranslaTableTest do
       }
     ])
 
-    post = %Post{}
-           |> Post.changeset(post_with_translations)
-           |> Repo.insert!()
+    post = Post.insert(post_attrs)
 
     assert post.description == "Description"
     assert post.title == "Blog Post"
@@ -69,9 +40,5 @@ defmodule TranslaTableTest do
     assert pt_translation.description == "Descrição"
   end
 
-  setup do
-    english = Repo.insert!(%TranslaTable.Lang{name: "English"})
-    portuguese = Repo.insert!(%TranslaTable.Lang{name: "Portuguese"})
-    %{en: english, pt: portuguese}
-  end
+  defp seed_lang(_context), do: Lang.seed()
 end

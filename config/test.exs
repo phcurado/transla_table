@@ -3,7 +3,7 @@ import Config
 config :transla_table, :ecto_repos, [TranslaTable.Repo]
 
 config :transla_table, :config,
-  lang_mod: TranslaTable.Lang
+  lang_mod: TranslaTable.Fixture.Schema.Lang
 
 config :transla_table, TranslaTable.Repo,
   username: "postgres",
