@@ -1,62 +1,56 @@
 defmodule TranslaTable.Schema do
-  @moduledoc false
+  @moduledoc """
+  `TranslaTable.Schema` will help casting translation module into your schema.
 
-  @doc """
-  Retrieves the compile time configuration.
+  ## Examples
+    You can define your schema module with the `TranslaTable.Schema` macro to cast and define the has many association:
+      defmodule MyApp.Post do
+
+      use Ecto.Schema
+      use TranslaTable.Schema,
+        translation_mod: MyApp.PostTranslation
+
+      import Ecto.Changeset
+
+      schema "post" do
+        field :title, :string
+        field :description, :string
+        field :author, :string
+        field :slug, :string
+
+        has_many_translations()
+
+        timestamps()
+      end
+
+      @doc false
+      def changeset(post, attrs) do
+        post
+        |> cast(attrs, [:title, :description, :author, :slug])
+        |> cast_translation()
+      end
+    end
   """
-  def compile_args(opts) do
-    config = Application.get_env(:transla_table, :config, [])
-    config = Keyword.merge(config, opts)
 
-    module = Keyword.fetch!(config, :module)
+  defmacro __using__(opts) do
+    quote bind_quoted: [opts: opts] do
+      import TranslaTable.Schema
 
-    unless is_ecto_module?(module) do
-      raise ArgumentError, "invalid Ecto module"
-    end
+      @trans_module Keyword.fetch!(opts, :translation_mod)
 
-    lang_mod = Keyword.fetch!(config, :lang_mod)
-
-    unless is_ecto_module?(lang_mod) do
-      raise ArgumentError, "invalid Ecto language module"
-    end
-
-    {_id, pk_type} = primary_key_type(module)
-    {_id, pk_lang_type} = primary_key_type(lang_mod)
-
-    table = Keyword.get(opts, :table, module.__schema__(:source)) |> String.to_atom()
-
-    fields = get_ecto_field!(module, Keyword.fetch!(opts, :fields))
-
-    {{module, pk_type}, table, fields, {lang_mod, pk_lang_type}}
-  end
-
-  defp get_ecto_field!(mod, fields) when is_list(fields) do
-    Enum.map(fields, &get_ecto_field!(mod, &1))
-  end
-
-  defp get_ecto_field!(mod, field) when is_atom(field) do
-    case mod.__schema__(:type, field) do
-      nil -> raise ArgumentError, "invalid :#{field} key in Schema fields"
-      type -> {field, type}
+      def __trans_schema__(:module), do: @trans_module
     end
   end
 
-  defp get_ecto_field!(_mod, _field) do
-    raise ArgumentError, "Not a valid field"
+  defmacro cast_translation(changeset) do
+    quote bind_quoted: [changeset: changeset] do
+      cast_assoc(changeset, :translations, with: &@trans_module.changeset/2)
+    end
   end
 
-  defp primary_key_type(mod) do
-    [id | _rest] = mod.__schema__(:primary_key)
-    get_ecto_field!(mod, id)
-  end
-
-  defp is_ecto_module?(mod) do
-    try do
-      mod.__schema__(:source)
-      true
-    rescue
-      UndefinedFunctionError ->
-        nil
+  defmacro has_many_translations() do
+    quote do
+      has_many :translations, @trans_module, on_replace: :delete
     end
   end
 end

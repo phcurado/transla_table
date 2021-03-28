@@ -2,10 +2,10 @@ defmodule TranslaTable.Fixture.Schema.Post do
   @moduledoc false
 
   use Ecto.Schema
-  import Ecto.Changeset
-  import TranslaTable
+  use TranslaTable.Schema,
+    translation_mod: TranslaTable.Fixture.Schema.PostTranslation
 
-  alias TranslaTable.Fixture.Schema.PostTranslation
+  import Ecto.Changeset
 
   schema "post" do
     field :title, :string
@@ -13,7 +13,7 @@ defmodule TranslaTable.Fixture.Schema.Post do
     field :author, :string
     field :slug, :string
 
-    has_many_translations(PostTranslation)
+    has_many_translations()
 
     timestamps()
   end
@@ -22,6 +22,6 @@ defmodule TranslaTable.Fixture.Schema.Post do
   def changeset(post, attrs) do
     post
     |> cast(attrs, [:title, :description, :author, :slug])
-    |> cast_translation(PostTranslation)
+    |> cast_translation()
   end
 end

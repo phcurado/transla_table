@@ -6,8 +6,10 @@ defmodule TranslaTable do
     To define a translation schema it just need to use the `TranslaTable` helper inside your schema to be translated
       defmodule MyApp.Post do
         use Ecto.Schema
+        use TranslaTable.Schema,
+          translation_mod: MyApp.PostTranslation
+
         import Ecto.Changeset
-        import TranslaTable
 
         alias MyApp.PostTranslation
 
@@ -17,7 +19,7 @@ defmodule TranslaTable do
           field :author, :string
           field :slug, :string
 
-          has_many_translations PostTranslation
+          has_many_translations()
 
           timestamps()
         end
@@ -26,7 +28,7 @@ defmodule TranslaTable do
         def changeset(post, attrs) do
           post
           |> cast(attrs, [:title, :description, :author, :slug])
-          |> cast_translation(PostTranslation)
+          |> cast_translation()
         end
       end
 
@@ -48,7 +50,7 @@ defmodule TranslaTable do
   defmacro __using__(opts) do
     prepare =
       quote bind_quoted: [opts: opts] do
-        {{module, pk_type}, table, fields, {lang_mod, pk_lang_type}} = TranslaTable.Schema.compile_args(opts)
+        {{module, pk_type}, table, fields, {lang_mod, pk_lang_type}} = TranslaTable.Schema.Ecto.compile_args(opts)
         @module module
         @pk_type pk_type
         @table table

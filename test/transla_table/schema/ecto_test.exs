@@ -1,26 +1,26 @@
-defmodule TranslaTable.SchemaTest do
+defmodule TranslaTable.Schema.EctoTest do
   use ExUnit.Case
 
-  alias TranslaTable.Schema
+  alias TranslaTable.Schema.Ecto, as: EctoSchema
   alias TranslaTable.Fixture.Schema.Lang
 
-  defmodule EctoSchema do
+  defmodule GenericSchema do
     use Ecto.Schema
-    schema "ecto_schema" do
+    schema "generic_schema" do
       field :name, :string
       field :description, :string
       field :author, :string
       field :slug, :string
 
-      belongs_to :account, TranslaTable.SchemaTest.EctoRelationSchema
+      belongs_to :account, TranslaTable.SchemaTest.GenericSchemaRelationSchema
     end
   end
 
-  defmodule EctoRelationSchema do
+  defmodule GenericSchemaRelationSchema do
     use Ecto.Schema
 
     @primary_key {:id_legacy, :binary_id, []}
-    schema "ecto_relation_schema" do
+    schema "generic_relation_schema" do
       field :name, :string
       field :description, :string
       field :author, :string
@@ -32,41 +32,41 @@ defmodule TranslaTable.SchemaTest do
 
   test "Assert valid arguments" do
     assert {
-      {EctoSchema, :id},
-      :ecto_schema,
+      {GenericSchema, :id},
+      :generic_schema,
       [{:name, :string}],
       {Lang, :id}
-    } = Schema.compile_args([module: EctoSchema, fields: [:name]])
+    } = EctoSchema.compile_args([module: GenericSchema, fields: [:name]])
   end
 
   test "Assert custom Module arguments" do
     assert {
-      {EctoRelationSchema, :binary_id},
-      :ecto_relation_schema,
+      {GenericSchemaRelationSchema, :binary_id},
+      :generic_relation_schema,
       [{:name, :string}, {:description, :string}],
       {Lang, :id}
-    } = Schema.compile_args([module: EctoRelationSchema, fields: [:name, :description]])
+    } = EctoSchema.compile_args([module: GenericSchemaRelationSchema, fields: [:name, :description]])
   end
 
   test "Invalid Ecto key :user field" do
     assert_raise ArgumentError, "invalid :user key in Schema fields", fn ->
-      Schema.compile_args([module: EctoSchema, fields: [:user]])
+      EctoSchema.compile_args([module: GenericSchema, fields: [:user]])
     end
 
     assert_raise ArgumentError, "invalid :user key in Schema fields", fn ->
-      Schema.compile_args([module: EctoSchema, fields: [:name, :user]])
+      EctoSchema.compile_args([module: GenericSchema, fields: [:name, :user]])
     end
   end
 
   test "Invalid Ecto key field" do
     assert_raise KeyError, fn ->
-      Schema.compile_args([])
+      EctoSchema.compile_args([])
     end
   end
 
   test "Invalid Ecto module" do
     assert_raise ArgumentError, "invalid Ecto module", fn ->
-      Schema.compile_args([module: NoEctoSchema])
+      EctoSchema.compile_args([module: NoEctoSchema])
     end
   end
 end

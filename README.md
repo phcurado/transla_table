@@ -11,7 +11,7 @@ Add the `TranslaTable` package in your `mix.exs`:
 ```elixir
 def deps do
   [
-    {:transla_table, "~> 0.2.0"}
+    {:transla_table, "~> 0.2.1"}
   ]
 end
 ```
@@ -84,10 +84,10 @@ Then in your `Post` module you define the translation methods using the `Transla
 ```elixir
 defmodule MyApp.Post do
   use Ecto.Schema
-  import Ecto.Changeset
-  import TranslaTable
+  use TranslaTable.Schema,
+    translation_mod: MyApp.PostTranslation
 
-  alias MyApp.PostTranslation
+  import Ecto.Changeset
 
   schema "post" do
     field :title, :string
@@ -95,7 +95,7 @@ defmodule MyApp.Post do
     field :author, :string
     field :slug, :string
 
-    has_many_translations PostTranslation
+    has_many_translations()
 
     timestamps()
   end
@@ -104,7 +104,7 @@ defmodule MyApp.Post do
   def changeset(post, attrs) do
     post
     |> cast(attrs, [:title, :description, :author, :slug])
-    |> cast_translation(PostTranslation)
+    |> cast_translation()
   end
 end
 ```
