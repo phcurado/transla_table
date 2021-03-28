@@ -1,7 +1,8 @@
 # TranslaTable
 
-Ecto based project for create translation schema and query data.
-See the documentation on [HexDocs](https://hexdocs.pm/transla_table)
+
+TranslaTable is a thin wrapper around [Ecto](https://hexdocs.pm/ecto/Ecto.html) library to provide internationalizable entities and a way to query localized data.
+See the documentation on [HexDocs](https://hexdocs.pm/transla_table).
 
 ## Installation
 

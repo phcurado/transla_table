@@ -34,10 +34,10 @@ defmodule TranslaTable.Query do
         def filter_by_title(query, _), do: query
       end
 
-    The run method will return your data translated based on the `locale` passed in the filters.
+    The `run` method will return your data translated based on the `locale` passed in the filters.
     This `locale` parameter should be the reference id of your Language table.
 
-    The method `filter_by_title`, it is not filtering by the localized value.
+    The method `filter_by_title` is not filtering by the localized value.
     If you want all your filters to be localized, It's recomended to structure your module in this way:
 
       defmodule MyApp.Blog.Post do
@@ -64,7 +64,7 @@ defmodule TranslaTable.Query do
         def localize(query, _params), do: query
 
         def filter_by_title(query, %{title: title, locale: _}) do
-          from [translations: tr] in query, # This is the name binding to the translations join
+          from [translations: tr] in query, # This is the name binding to the translations (joined by the localize method)
           where: tr.title == ^title
         end
 
