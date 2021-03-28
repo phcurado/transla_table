@@ -18,14 +18,15 @@ end
 ## Language Schema
 You need to create a `Language` table and schema to be used and define the languages available for translation.
 
-### Creating table migration
+### Creating language migration and schema
+
 ```elixir
 defmodule MyApp.CreateLanguage do
   use Ecto.Migration
 
   def change do
     create table(:language, primary_key: false) do
-      add :id, :string, size: 10, primary_key: true
+      add :id, :string, size: 10, primary_key: true # added as string just to reference the primary key as "en", "es", "pt", etc
       add :name, :string, null: false
       timestamps()
     end
@@ -49,9 +50,35 @@ defmodule MyApp.Language do
   end
 end
 ```
+### Creating migration for the entity to be translated
+
+For example, if you have a `Post` table and want it to be internationalized, create the table which will make the relation between `post` and `language`:
+
+
+```elixir
+defmodule MyApp.CreatePostTranslation do
+  use Ecto.Migration
+
+  def change do
+    create table(:post_translation, primary_key: false) do
+      # Creating post_id and language_id as primary keys
+      add :post_id, references(:post, on_delete: :delete_all), primary_key: true
+      add :language_id, references(:language, type: :string, on_delete: :delete_all), primary_key: true
+
+      # fields to translate in the Post table
+      add :title, :string
+      add :description, :string
+      add :slug, :string
+
+      timestamps()
+    end
+  end
+end
+
+```
 
 ## Translate Schemas
-To define a translation schema it just need to use the `TranslaTable` helper inside your schema to be translated
+Then in your `Post` module you define the translation methods using the `TranslaTable` helper inside your schema to be translated
 
 ```elixir
 defmodule MyApp.Post do
@@ -81,7 +108,7 @@ defmodule MyApp.Post do
 end
 ```
 
-Then create the translation module
+Finally create the translation module which will automatically map the fields within the `Post` schema
 
 ```elixir
 defmodule MyApp.PostTranslation
