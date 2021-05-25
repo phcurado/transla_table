@@ -11,30 +11,34 @@ defmodule TranslaTable.Fixture.Post do
   end
 
   def seed() do
-    post = insert(%{
-      title: "Blog Post",
-      description: "Description",
-    })
+    post =
+      insert(%{
+        title: "Blog Post",
+        description: "Description"
+      })
+
     %{post: post}
   end
 
   def seed_with_lang(en_id, pt_id) do
-    post = insert(%{
-      title: "Blog Post",
-      description: "Description",
-      translations: [
-        %{
-          language_id: en_id,
-          title: "Blog Post",
-          description: "Description"
-        },
-        %{
-          language_id: pt_id,
-          title: "Post do Blog",
-          description: "Descrição"
-        },
-      ]
-    })
+    post =
+      insert(%{
+        title: "Blog Post",
+        description: "Description",
+        translations: [
+          %{
+            language_id: en_id,
+            title: "Blog Post",
+            description: "Description"
+          },
+          %{
+            language_id: pt_id,
+            title: "Post do Blog",
+            description: "Descrição"
+          }
+        ]
+      })
+
     %{post: post}
   end
 end

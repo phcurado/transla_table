@@ -7,29 +7,59 @@ defmodule TranslaTable.QueryTest do
   alias TranslaTable.Fixture.Schema.PostTranslation, as: PostTranslationSchema
   import TranslaTable.Query
 
+  describe "Setup translations on schema" do
+    setup [:seed_lang, :seed_post_with_lang]
 
-  setup [:seed_lang, :seed_post]
+    test "Get fields on schema", %{lang: lang} do
+      %{pt: pt, en: en} = lang
+      query = from(q in PostSchema)
 
-  test "Assert valid arguments", %{lang: lang} do
-    %{pt: pt, en: en} = lang
-    query = from q in PostSchema
+      post_pt =
+        query
+        |> localize_query(pt.id, PostTranslationSchema)
+        |> Repo.one()
 
-    post_pt = query
-    |> localize_query(pt.id, PostTranslationSchema)
-    |> Repo.one()
+      assert post_pt.title == "Post do Blog"
+      assert post_pt.description == "Descrição"
 
-    assert post_pt.title == "Post do Blog"
-    assert post_pt.description == "Descrição"
+      post_en =
+        query
+        |> localize_query(en.id, PostTranslationSchema)
+        |> Repo.one()
 
-    post_en = query
-    |> localize_query(en.id, PostTranslationSchema)
-    |> Repo.one()
-
-    assert post_en.title == "Blog Post"
-    assert post_en.description == "Description"
+      assert post_en.title == "Blog Post"
+      assert post_en.description == "Description"
+    end
   end
 
-  defp seed_post(%{lang: %{en: en, pt: pt}}), do: Post.seed_with_lang(en.id, pt.id)
+  describe "Schema without translations" do
+    setup [:seed_lang, :seed_post]
+
+    test "Get fields on schema", %{lang: lang} do
+      %{pt: pt, en: en} = lang
+      query = from(q in PostSchema)
+
+      post_pt =
+        query
+        |> localize_query(pt.id, PostTranslationSchema)
+        |> Repo.one()
+
+      assert post_pt.title == "Blog Post"
+      assert post_pt.description == "Description"
+
+      post_en =
+        query
+        |> localize_query(en.id, PostTranslationSchema)
+        |> Repo.one()
+
+      assert post_en.title == "Blog Post"
+      assert post_en.description == "Description"
+    end
+  end
+
+  defp seed_post(_context), do: Post.seed()
+
+  defp seed_post_with_lang(%{lang: %{en: en, pt: pt}}), do: Post.seed_with_lang(en.id, pt.id)
 
   defp seed_lang(_context), do: Lang.seed()
 end

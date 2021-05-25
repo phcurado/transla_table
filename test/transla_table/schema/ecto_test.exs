@@ -6,6 +6,7 @@ defmodule TranslaTable.Schema.EctoTest do
 
   defmodule GenericSchema do
     use Ecto.Schema
+
     schema "generic_schema" do
       field :name, :string
       field :description, :string
@@ -32,29 +33,33 @@ defmodule TranslaTable.Schema.EctoTest do
 
   test "Assert valid arguments" do
     assert {
-      {GenericSchema, :id},
-      :generic_schema,
-      [{:name, :string}],
-      {Lang, :id}
-    } = EctoSchema.compile_args([module: GenericSchema, fields: [:name]])
+             {GenericSchema, :id},
+             :generic_schema,
+             [{:name, :string}],
+             {Lang, :id}
+           } = EctoSchema.compile_args(module: GenericSchema, fields: [:name])
   end
 
   test "Assert custom Module arguments" do
     assert {
-      {GenericSchemaRelationSchema, :binary_id},
-      :generic_relation_schema,
-      [{:name, :string}, {:description, :string}],
-      {Lang, :id}
-    } = EctoSchema.compile_args([module: GenericSchemaRelationSchema, fields: [:name, :description]])
+             {GenericSchemaRelationSchema, :binary_id},
+             :generic_relation_schema,
+             [{:name, :string}, {:description, :string}],
+             {Lang, :id}
+           } =
+             EctoSchema.compile_args(
+               module: GenericSchemaRelationSchema,
+               fields: [:name, :description]
+             )
   end
 
   test "Invalid Ecto key :user field" do
     assert_raise ArgumentError, "invalid :user key in Schema fields", fn ->
-      EctoSchema.compile_args([module: GenericSchema, fields: [:user]])
+      EctoSchema.compile_args(module: GenericSchema, fields: [:user])
     end
 
     assert_raise ArgumentError, "invalid :user key in Schema fields", fn ->
-      EctoSchema.compile_args([module: GenericSchema, fields: [:name, :user]])
+      EctoSchema.compile_args(module: GenericSchema, fields: [:name, :user])
     end
   end
 
@@ -66,7 +71,7 @@ defmodule TranslaTable.Schema.EctoTest do
 
   test "Invalid Ecto module" do
     assert_raise ArgumentError, "invalid Ecto module", fn ->
-      EctoSchema.compile_args([module: NoEctoSchema])
+      EctoSchema.compile_args(module: NoEctoSchema)
     end
   end
 end

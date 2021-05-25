@@ -2,6 +2,7 @@ defmodule TranslaTable.Fixture.Schema.Post do
   @moduledoc false
 
   use Ecto.Schema
+
   use TranslaTable.Schema,
     translation_mod: TranslaTable.Fixture.Schema.PostTranslation
 

@@ -6,25 +6,27 @@ defmodule TranslaTableTest do
 
   @new_post %{
     title: "Blog Post",
-    description: "Description",
+    description: "Description"
   }
 
   setup [:seed_lang]
 
   test "add post with translation", %{lang: lang} do
     %{en: en, pt: pt} = lang
-    post_attrs = Map.put(@new_post, :translations, [
-      %{
-        language_id: pt.id,
-        title: "Post do Blog",
-        description: "Descrição"
-      },
-      %{
-        language_id: en.id,
-        title: "Blog Post",
-        description: "Description"
-      }
-    ])
+
+    post_attrs =
+      Map.put(@new_post, :translations, [
+        %{
+          language_id: pt.id,
+          title: "Post do Blog",
+          description: "Descrição"
+        },
+        %{
+          language_id: en.id,
+          title: "Blog Post",
+          description: "Description"
+        }
+      ])
 
     post = Post.insert(post_attrs)
 

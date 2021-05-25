@@ -80,13 +80,19 @@ defmodule TranslaTable.Query do
     This way the queries are composable by locale and It's flexible enough for not using the locale argument at all.
   """
   defmacro localize_query(query, locale_id, translation_module) do
-    quote bind_quoted: [query: query, locale_id: locale_id, translation_module: translation_module] do
+    quote bind_quoted: [
+            query: query,
+            locale_id: locale_id,
+            translation_module: translation_module
+          ] do
       fields = translation_module.__trans_schema__(:fields)
       foreign_id = translation_module.__trans_schema__(:table_foreign_id)
 
       from q in query,
-      left_join: tm in ^translation_module, as: :translations, on: q.id == field(tm, ^foreign_id) and tm.language_id == ^locale_id,
-      select_merge:  map(tm, ^fields)
+        left_join: tm in ^translation_module,
+        as: :translations,
+        on: q.id == field(tm, ^foreign_id) and tm.language_id == ^locale_id,
+        select_merge: map(tm, ^fields)
     end
   end
 end

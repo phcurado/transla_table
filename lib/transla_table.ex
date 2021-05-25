@@ -50,7 +50,9 @@ defmodule TranslaTable do
   defmacro __using__(opts) do
     prepare =
       quote bind_quoted: [opts: opts] do
-        {{module, pk_type}, table, fields, {lang_mod, pk_lang_type}} = TranslaTable.Schema.Ecto.compile_args(opts)
+        {{module, pk_type}, table, fields, {lang_mod, pk_lang_type}} =
+          TranslaTable.Schema.Ecto.compile_args(opts)
+
         @module module
         @pk_type pk_type
         @table table
@@ -85,7 +87,10 @@ defmodule TranslaTable do
         @doc false
         def changeset(translation, attrs) do
           translation
-          |> cast(attrs, Enum.map(@fields, fn {f, _t} -> f end) ++  [:"#{@table}_id", :language_id])
+          |> cast(
+            attrs,
+            Enum.map(@fields, fn {f, _t} -> f end) ++ [:"#{@table}_id", :language_id]
+          )
         end
       end
 

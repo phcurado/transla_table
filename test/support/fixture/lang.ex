@@ -12,9 +12,9 @@ defmodule TranslaTable.Fixture.Lang do
   def seed() do
     english = insert(%{name: "English"})
     portuguese = insert(%{name: "Portuguese"})
+
     %{
-      lang:
-      %{
+      lang: %{
         en: english,
         pt: portuguese
       }
