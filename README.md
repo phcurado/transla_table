@@ -11,7 +11,7 @@ Add the `TranslaTable` package in your `mix.exs`:
 ```elixir
 def deps do
   [
-    {:transla_table, "~> 0.2.1"}
+    {:transla_table, "~> 0.2"}
   ]
 end
 ```
