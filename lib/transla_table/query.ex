@@ -64,8 +64,9 @@ defmodule TranslaTable.Query do
         def localize(query, _params), do: query
 
         def filter_by_title(query, %{title: title, locale: _}) do
-          from [translations: tr] in query, # This is the name binding to the translations (joined by the localize method)
-          where: tr.title == ^title
+          from [p, translations: tr] in query, # This is the name binding to the translations (joined by the localize method)
+            where: not is_nil(tr.title) and tr.title == ^title,
+            or_where: not is_nil(p.title) and p.title == ^title
         end
 
         # This will be the default method when the locale is not added as an argument

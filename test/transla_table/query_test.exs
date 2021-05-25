@@ -30,6 +30,34 @@ defmodule TranslaTable.QueryTest do
       assert post_en.title == "Blog Post"
       assert post_en.description == "Description"
     end
+
+    test "Get fields on schema after query", %{lang: lang} do
+      %{pt: pt, en: en} = lang
+      query = from(q in PostSchema)
+
+      query_by_title = fn query, %{title: title, locale: _} ->
+        from [p, translations: tr] in query,
+          where: not is_nil(tr.title) and ilike(tr.title, ^("%" <> title <> "%")),
+          or_where: not is_nil(p.title) and ilike(p.title, ^("%" <> title <> "%"))
+      end
+
+      post_pt =
+        query
+        |> localize_query(pt.id, PostTranslationSchema)
+        |> query_by_title.(%{title: "Post do Blog", locale: pt.id})
+        |> Repo.one()
+
+      assert post_pt.title == "Post do Blog"
+      assert post_pt.description == "Descrição"
+
+      post_en =
+        query
+        |> localize_query(en.id, PostTranslationSchema)
+        |> query_by_title.(%{title: "Post do Blog", locale: en.id})
+        |> Repo.one()
+
+      assert post_en == nil
+    end
   end
 
   describe "Schema without translations" do
@@ -50,6 +78,35 @@ defmodule TranslaTable.QueryTest do
       post_en =
         query
         |> localize_query(en.id, PostTranslationSchema)
+        |> Repo.one()
+
+      assert post_en.title == "Blog Post"
+      assert post_en.description == "Description"
+    end
+
+    test "Get fields on schema after query", %{lang: lang} do
+      %{pt: pt, en: en} = lang
+      query = from(q in PostSchema)
+
+      query_by_title = fn query, %{title: title, locale: _} ->
+        from [p, translations: tr] in query,
+          where: not is_nil(tr.title) and ilike(tr.title, ^("%" <> title <> "%")),
+          or_where: not is_nil(p.title) and ilike(p.title, ^("%" <> title <> "%"))
+      end
+
+      post_pt =
+        query
+        |> localize_query(pt.id, PostTranslationSchema)
+        |> query_by_title.(%{title: "Post", locale: pt.id})
+        |> Repo.one()
+
+      assert post_pt.title == "Blog Post"
+      assert post_pt.description == "Description"
+
+      post_en =
+        query
+        |> localize_query(en.id, PostTranslationSchema)
+        |> query_by_title.(%{title: "Post", locale: pt.id})
         |> Repo.one()
 
       assert post_en.title == "Blog Post"
