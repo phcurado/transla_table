@@ -17,12 +17,12 @@ defmodule TranslaTableTest do
     post_attrs =
       Map.put(@new_post, :translations, [
         %{
-          language_id: pt.id,
+          locale_id: pt.id,
           title: "Post do Blog",
           description: "Descrição"
         },
         %{
-          language_id: en.id,
+          locale_id: en.id,
           title: "Blog Post",
           description: "Description"
         }
@@ -33,11 +33,11 @@ defmodule TranslaTableTest do
     assert post.description == "Description"
     assert post.title == "Blog Post"
 
-    en_translation = Enum.find(post.translations, &(&1.language_id == en.id))
+    en_translation = Enum.find(post.translations, &(&1.locale_id == en.id))
     assert en_translation.title == "Blog Post"
     assert en_translation.description == "Description"
 
-    pt_translation = Enum.find(post.translations, &(&1.language_id == pt.id))
+    pt_translation = Enum.find(post.translations, &(&1.locale_id == pt.id))
     assert pt_translation.title == "Post do Blog"
     assert pt_translation.description == "Descrição"
   end

@@ -4,7 +4,7 @@ defmodule TranslaTable.Fixture.Schema.Post do
   use Ecto.Schema
 
   use TranslaTable.Schema,
-    translation_mod: TranslaTable.Fixture.Schema.PostTranslation
+    translation_schema: TranslaTable.Fixture.Schema.PostTranslation
 
   import Ecto.Changeset
 

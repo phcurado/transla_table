@@ -3,11 +3,16 @@ defmodule TranslaTable do
   `TranslaTable` is a helper library for creating a translation schema inside your ecto schema.
 
   ## Translation
+
+    Inside your `config.exs` add your locale config
+
+      config :transla_table, :config, locale_schema: MyApp.Locale
+
     To define a translation schema it just need to use the `TranslaTable` helper inside your schema to be translated
       defmodule MyApp.Post do
         use Ecto.Schema
         use TranslaTable.Schema,
-          translation_mod: MyApp.PostTranslation
+          translation_schema: MyApp.PostTranslation
 
         import Ecto.Changeset
 
@@ -35,29 +40,25 @@ defmodule TranslaTable do
     Then create the translation module
 
       defmodule MyApp.PostTranslation
-        alias MyApp.Post
-        alias MyApp.Language
-
         use TranslaTable,
-          module: Post, # Module to be translated
-          lang_mod: Language, # Language schema table
+          schema: MyApp.Post,
           fields: [:title, :description, :slug]
       end
 
-    Then the TranslaTable Macro will create a schema with the given fields and make the relation with your `Language` module.
+    Then the TranslaTable Macro will create a schema with the given fields and make the relation with your `Locale` schema.
   """
 
   defmacro __using__(opts) do
     prepare =
       quote bind_quoted: [opts: opts] do
-        {{module, pk_type}, table, fields, {lang_mod, pk_lang_type}} =
+        {{schema, pk_type}, table, fields, {locale_schema, pk_lang_type}} =
           TranslaTable.Schema.Ecto.compile_args(opts)
 
-        @module module
+        @schema schema
         @pk_type pk_type
         @table table
         @fields fields
-        @lang_mod lang_mod
+        @locale_schema locale_schema
         @pk_lang_type pk_lang_type
         @table_foreign_id (Atom.to_string(@table) <> "_id") |> String.to_existing_atom()
 
@@ -71,11 +72,11 @@ defmodule TranslaTable do
         use Ecto.Schema
         import Ecto.Changeset
 
-        @primary_key false
+        @primary_key {:id, @pk_type, autogenerate: true}
         @foreign_key_type @pk_type
         schema "#{@table}_translation" do
-          belongs_to @table, @module, primary_key: true
-          belongs_to :language, @lang_mod, type: @pk_lang_type, primary_key: true
+          belongs_to @table, @schema
+          belongs_to :locale, @locale_schema, type: @pk_lang_type
 
           Enum.each(@fields, fn {f, t} ->
             field f, t
@@ -84,31 +85,22 @@ defmodule TranslaTable do
           timestamps()
         end
 
+        @foreign_keys ~w"#{@table}_id locale_id"a
+
         @doc false
         def changeset(translation, attrs) do
           translation
           |> cast(
             attrs,
-            Enum.map(@fields, fn {f, _t} -> f end) ++ [:"#{@table}_id", :language_id]
+            Enum.map(@fields, fn {f, _t} -> f end) ++ @foreign_keys
           )
+          |> unique_constraint(@foreign_keys)
         end
       end
 
     quote do
       unquote(prepare)
       unquote(contents)
-    end
-  end
-
-  defmacro cast_translation(changeset, mod) do
-    quote bind_quoted: [changeset: changeset, mod: mod] do
-      cast_assoc(changeset, :translations, with: &mod.changeset/2)
-    end
-  end
-
-  defmacro has_many_translations(mod) do
-    quote bind_quoted: [mod: mod] do
-      has_many :translations, mod, on_replace: :delete
     end
   end
 end

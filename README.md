@@ -1,5 +1,12 @@
 # TranslaTable
-
+- [TranslaTable](#translatable)
+  - [Installation](#installation)
+  - [Locale Schema](#locale-schema)
+    - [Creating locale migration and schema](#creating-locale-migration-and-schema)
+    - [Creating migration for the entity to be translated](#creating-migration-for-the-entity-to-be-translated)
+  - [Translate Schemas](#translate-schemas)
+  - [Querying data](#querying-data)
+  - [License](#license)
 
 TranslaTable is a thin wrapper around [Ecto](https://hexdocs.pm/ecto/Ecto.html) library to provide internationalizable entities and a way to query localized data.
 See the documentation on [HexDocs](https://hexdocs.pm/transla_table).
@@ -11,22 +18,22 @@ Add the `TranslaTable` package in your `mix.exs`:
 ```elixir
 def deps do
   [
-    {:transla_table, "~> 0.2"}
+    {:transla_table, "~> 0.3"}
   ]
 end
 ```
 
-## Language Schema
-You need to create a `Language` table and schema to be used and define the languages available for translation.
+## Locale Schema
+You need to create a `Locale` table and schema to be used and define the locales available for translation.
 
-### Creating language migration and schema
+### Creating locale migration and schema
 
 ```elixir
-defmodule MyApp.CreateLanguage do
+defmodule MyApp.CreateLocale do
   use Ecto.Migration
 
   def change do
-    create table(:language, primary_key: false) do
+    create table(:locale, primary_key: false) do
       add :id, :string, size: 10, primary_key: true # added as string just to reference the primary key as "en", "es", "pt", etc
       add :name, :string, null: false
       timestamps()
@@ -37,23 +44,31 @@ end
 ```
 
 ```elixir
-defmodule MyApp.Language do
+defmodule MyApp.Locale do
   @moduledoc """
-  Language Schema
+  Locale Schema
   """
   use Ecto.Schema
   import Ecto.Changeset
 
   @primary_key {:id, :string, autogenerate: false}
-  schema "language" do
+  schema "locale" do
     field :name, :string
     timestamps()
   end
 end
 ```
+
+Then Inside your `config.exs` add your locale config
+
+```Elixir
+
+config :transla_table, :config, locale_schema: MyApp.Locale
+
+```
 ### Creating migration for the entity to be translated
 
-For example, if you have a `Post` table and want it to be internationalized, create the table which will make the relation between `post` and `language`:
+For example, if you have a `Post` table and want it to be internationalized, create the table which will make the relation between `post` and `locale`:
 
 
 ```elixir
@@ -61,10 +76,9 @@ defmodule MyApp.CreatePostTranslation do
   use Ecto.Migration
 
   def change do
-    create table(:post_translation, primary_key: false) do
-      # Creating post_id and language_id as primary keys
-      add :post_id, references(:post, on_delete: :delete_all), primary_key: true
-      add :language_id, references(:language, type: :string, on_delete: :delete_all), primary_key: true
+    create table(:post_translation) do
+      add :post_id, references(:post, on_delete: :delete_all)
+      add :locale_id, references(:locale, type: :string, on_delete: :delete_all)
 
       # fields to translate in the Post table
       add :title, :string
@@ -73,6 +87,7 @@ defmodule MyApp.CreatePostTranslation do
 
       timestamps()
     end
+    create unique_index(:post_translation, [:post_id, :locale_id])
   end
 end
 
@@ -85,7 +100,7 @@ Then in your `Post` module you define the translation methods using the `Transla
 defmodule MyApp.Post do
   use Ecto.Schema
   use TranslaTable.Schema,
-    translation_mod: MyApp.PostTranslation
+    translation_schema: MyApp.PostTranslation
 
   import Ecto.Changeset
 
@@ -113,16 +128,68 @@ Finally create the translation module which will automatically map the fields wi
 
 ```elixir
 defmodule MyApp.PostTranslation
-  alias MyApp.Post
-  alias MyApp.Language
-
   use TranslaTable,
-    module: Post, # Module to be translated
-    lang_mod: Language, # Language schema table
+    schema: MyApp.Post,
     fields: [:title, :description, :slug]
 end
 ```
 then this will create a Translation module with the relations and fields.
+
+## Querying data
+
+Using the same example above, it is possible to query data to return only localized fields.
+
+```Elixir
+defmodule MyApp.PostContext do
+  import Ecto.Query
+  import TranslaTable.Query
+  
+  alias MyApp.Post
+  alias MyApp.Repo
+
+  def list_all() do
+    from(p in Post)
+    |> preload(:translations)
+    |> Repo.all()
+  end
+
+  def list_localized(locale_id) do
+    from(p in Post)
+    |> localize_query(locale_id)
+    |> Repo.all()
+  end
+end
+
+...
+## then you can list the posts with translations
+iex> MyApp.PostContext.list_all()
+[
+  %MyApp.Post{
+    description: "Description",
+    title: "Blog Post",
+    translations: [
+      %MyApp.PostTranslation{
+        description: "Description",
+        title: "Blog Post"
+      },
+      %MyApp.PostTranslation{
+        description: "Descrição",
+        title: "Post do Blog"
+      }
+    ]
+  }
+]
+
+# also you can define which locale you want to return
+iex> MyApp.PostContext.list_localized("pt")
+[
+  %MyApp.Post{
+    description: "Descrição",
+    title: "Post do Blog"
+  }
+]
+```
+
 
 ## License
 Copyright 2021 Paulo Henrique de Oliveira Curado

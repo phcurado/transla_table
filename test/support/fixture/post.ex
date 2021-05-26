@@ -27,12 +27,12 @@ defmodule TranslaTable.Fixture.Post do
         description: "Description",
         translations: [
           %{
-            language_id: en_id,
+            locale_id: en_id,
             title: "Blog Post",
             description: "Description"
           },
           %{
-            language_id: pt_id,
+            locale_id: pt_id,
             title: "Post do Blog",
             description: "Descrição"
           }

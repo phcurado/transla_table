@@ -37,7 +37,7 @@ defmodule TranslaTable.Schema.EctoTest do
              :generic_schema,
              [{:name, :string}],
              {Lang, :id}
-           } = EctoSchema.compile_args(module: GenericSchema, fields: [:name])
+           } = EctoSchema.compile_args(schema: GenericSchema, fields: [:name])
   end
 
   test "Assert custom Module arguments" do
@@ -48,18 +48,18 @@ defmodule TranslaTable.Schema.EctoTest do
              {Lang, :id}
            } =
              EctoSchema.compile_args(
-               module: GenericSchemaRelationSchema,
+               schema: GenericSchemaRelationSchema,
                fields: [:name, :description]
              )
   end
 
   test "Invalid Ecto key :user field" do
     assert_raise ArgumentError, "invalid :user key in Schema fields", fn ->
-      EctoSchema.compile_args(module: GenericSchema, fields: [:user])
+      EctoSchema.compile_args(schema: GenericSchema, fields: [:user])
     end
 
     assert_raise ArgumentError, "invalid :user key in Schema fields", fn ->
-      EctoSchema.compile_args(module: GenericSchema, fields: [:name, :user])
+      EctoSchema.compile_args(schema: GenericSchema, fields: [:name, :user])
     end
   end
 
@@ -71,7 +71,7 @@ defmodule TranslaTable.Schema.EctoTest do
 
   test "Invalid Ecto module" do
     assert_raise ArgumentError, "invalid Ecto module", fn ->
-      EctoSchema.compile_args(module: NoEctoSchema)
+      EctoSchema.compile_args(schema: NoEctoSchema)
     end
   end
 end

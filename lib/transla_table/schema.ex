@@ -8,7 +8,7 @@ defmodule TranslaTable.Schema do
 
       use Ecto.Schema
       use TranslaTable.Schema,
-        translation_mod: MyApp.PostTranslation
+        translation_schema: MyApp.PostTranslation
 
       import Ecto.Changeset
 
@@ -36,7 +36,7 @@ defmodule TranslaTable.Schema do
     quote bind_quoted: [opts: opts] do
       import TranslaTable.Schema
 
-      @trans_module Keyword.fetch!(opts, :translation_mod)
+      @trans_module Keyword.fetch!(opts, :translation_schema)
 
       def __trans_schema__(:module), do: @trans_module
     end

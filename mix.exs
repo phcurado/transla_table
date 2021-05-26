@@ -2,7 +2,7 @@ defmodule TranslaTable.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/phcurado/transla_table"
-  @version "0.2.3"
+  @version "0.3.0"
 
   def project do
     [
@@ -50,7 +50,6 @@ defmodule TranslaTable.MixProject do
 
   defp docs do
     [
-      main: "readme",
       source_url: @source_url,
       source_ref: "v#{@version}",
       extras: ["README.md"]

@@ -8,7 +8,61 @@ defmodule TranslaTable.QueryTest do
   import TranslaTable.Query
 
   describe "Setup translations on schema" do
+    defmodule PostContext do
+      import Ecto.Query
+      import TranslaTable.Query
+
+      alias TranslaTable.Fixture.Schema.Post
+
+      def list_all() do
+        from(p in Post)
+        |> preload(:translations)
+        |> Repo.all()
+      end
+
+      def list_localized(locale_id) do
+        from(p in Post)
+        |> localize_query(locale_id)
+        |> Repo.all()
+      end
+    end
+
     setup [:seed_lang, :seed_post_with_lang]
+
+    test "With query module", %{lang: lang} do
+      %{pt: pt, en: en} = lang
+
+      assert [
+               %PostSchema{
+                 description: "Description",
+                 title: "Blog Post",
+                 translations: [
+                   %PostTranslationSchema{
+                     description: "Description",
+                     title: "Blog Post"
+                   },
+                   %PostTranslationSchema{
+                     description: "Descrição",
+                     title: "Post do Blog"
+                   }
+                 ]
+               }
+             ] = PostContext.list_all()
+
+      assert [
+               %PostSchema{
+                 description: "Description",
+                 title: "Blog Post"
+               }
+             ] = PostContext.list_localized(en.id)
+
+      assert [
+               %PostSchema{
+                 description: "Descrição",
+                 title: "Post do Blog"
+               }
+             ] = PostContext.list_localized(pt.id)
+    end
 
     test "Get fields on schema", %{lang: lang} do
       %{pt: pt, en: en} = lang
@@ -16,7 +70,7 @@ defmodule TranslaTable.QueryTest do
 
       post_pt =
         query
-        |> localize_query(pt.id, PostTranslationSchema)
+        |> localize_query(pt.id)
         |> Repo.one()
 
       assert post_pt.title == "Post do Blog"
@@ -24,7 +78,7 @@ defmodule TranslaTable.QueryTest do
 
       post_en =
         query
-        |> localize_query(en.id, PostTranslationSchema)
+        |> localize_query(en.id)
         |> Repo.one()
 
       assert post_en.title == "Blog Post"
@@ -43,7 +97,7 @@ defmodule TranslaTable.QueryTest do
 
       post_pt =
         query
-        |> localize_query(pt.id, PostTranslationSchema)
+        |> localize_query(pt.id)
         |> query_by_title.(%{title: "Post do Blog", locale: pt.id})
         |> Repo.one()
 
@@ -52,7 +106,7 @@ defmodule TranslaTable.QueryTest do
 
       post_en =
         query
-        |> localize_query(en.id, PostTranslationSchema)
+        |> localize_query(en.id)
         |> query_by_title.(%{title: "Post do Blog", locale: en.id})
         |> Repo.one()
 
@@ -69,7 +123,7 @@ defmodule TranslaTable.QueryTest do
 
       post_pt =
         query
-        |> localize_query(pt.id, PostTranslationSchema)
+        |> localize_query(pt.id)
         |> Repo.one()
 
       assert post_pt.title == "Blog Post"
@@ -77,7 +131,7 @@ defmodule TranslaTable.QueryTest do
 
       post_en =
         query
-        |> localize_query(en.id, PostTranslationSchema)
+        |> localize_query(en.id)
         |> Repo.one()
 
       assert post_en.title == "Blog Post"
@@ -96,7 +150,7 @@ defmodule TranslaTable.QueryTest do
 
       post_pt =
         query
-        |> localize_query(pt.id, PostTranslationSchema)
+        |> localize_query(pt.id)
         |> query_by_title.(%{title: "Post", locale: pt.id})
         |> Repo.one()
 
@@ -105,7 +159,7 @@ defmodule TranslaTable.QueryTest do
 
       post_en =
         query
-        |> localize_query(en.id, PostTranslationSchema)
+        |> localize_query(en.id)
         |> query_by_title.(%{title: "Post", locale: pt.id})
         |> Repo.one()
 
