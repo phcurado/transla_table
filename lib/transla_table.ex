@@ -92,7 +92,7 @@ defmodule TranslaTable do
           translation
           |> cast(
             attrs,
-            Enum.map(@fields, fn {f, _t} -> f end) ++ @foreign_keys ++ [:id]
+            Enum.map(@fields, fn {f, _t} -> f end) ++ @foreign_keys
           )
           |> unique_constraint(@foreign_keys)
         end
