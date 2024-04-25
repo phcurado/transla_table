@@ -1,6 +1,8 @@
 defmodule TranslaTableTest do
   use TranslaTable.RepoCase
-  alias TranslaTable.Fixture.{Post, Lang}
+
+  alias TranslaTable.Fixture.Lang
+  alias TranslaTable.Fixture.Post
 
   doctest TranslaTable
 

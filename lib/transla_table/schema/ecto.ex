@@ -10,13 +10,13 @@ defmodule TranslaTable.Schema.Ecto do
 
     schema = Keyword.fetch!(config, :schema)
 
-    unless is_ecto_module?(schema) do
+    unless ecto_module?(schema) do
       raise ArgumentError, "invalid Ecto module"
     end
 
     locale_schema = Keyword.fetch!(config, :locale_schema)
 
-    unless is_ecto_module?(locale_schema) do
+    unless ecto_module?(locale_schema) do
       raise ArgumentError, "invalid Ecto locale module"
     end
 
@@ -50,13 +50,11 @@ defmodule TranslaTable.Schema.Ecto do
     get_ecto_field!(schema, id)
   end
 
-  defp is_ecto_module?(schema) do
-    try do
-      schema.__schema__(:source)
-      true
-    rescue
-      UndefinedFunctionError ->
-        nil
-    end
+  defp ecto_module?(schema) do
+    schema.__schema__(:source)
+    true
+  rescue
+    UndefinedFunctionError ->
+      false
   end
 end
