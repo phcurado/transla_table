@@ -63,8 +63,10 @@ defmodule TranslaTable.MixProject do
 
   defp package() do
     [
+      maintainers: ["Paulo Curado"],
       licenses: ["Apache-2.0"],
-      links: %{"GitHub" => "https://github.com/phcurado/transla_table"}
+      links: %{"GitHub" => "https://github.com/phcurado/transla_table"},
+      files: ~w(.formatter.exs mix.exs README.md lib)
     ]
   end
 end
