@@ -25,3 +25,7 @@ transla_table-*.tar
 
 # Temporary files for e.g. tests
 /tmp
+
+# Dialyzer
+/priv/plts/*.plt
+/priv/plts/*.plt.hash

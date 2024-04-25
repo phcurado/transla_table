@@ -20,7 +20,11 @@ defmodule TranslaTable.MixProject do
       name: "TranslaTable",
       description: "TranslaTable is a library for helping create translation schemas.",
       docs: docs(),
-      package: package()
+      package: package(),
+      dialyzer: [
+        plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
+        plt_add_apps: [:ex_unit, :mix]
+      ]
     ]
   end
 
@@ -35,10 +39,11 @@ defmodule TranslaTable.MixProject do
 
   defp deps do
     [
-      {:ecto_sql, ">= 3.4.0"},
-      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
-      {:postgrex, "~> 0.15.8", only: [:test]},
-      {:ex_doc, "~> 0.24", only: :dev, runtime: false}
+      {:ecto_sql, "~> 3.11"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:postgrex, "~> 0.17", only: [:test]},
+      {:ex_doc, "~> 0.31", only: :dev, runtime: false}
     ]
   end
 

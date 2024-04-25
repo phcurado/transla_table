@@ -1,8 +1,8 @@
 defmodule TranslaTable.Schema.EctoTest do
   use ExUnit.Case
 
-  alias TranslaTable.Schema.Ecto, as: EctoSchema
   alias TranslaTable.Fixture.Schema.Lang
+  alias TranslaTable.Schema.Ecto, as: EctoSchema
 
   defmodule GenericSchema do
     use Ecto.Schema

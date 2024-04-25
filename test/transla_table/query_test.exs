@@ -1,11 +1,13 @@
 defmodule TranslaTable.QueryTest do
-  use ExUnit.Case
-  import Ecto.Query
   use TranslaTable.RepoCase
-  alias TranslaTable.Fixture.{Post, Lang}
+  import Ecto.Query
+  import TranslaTable.Query
+
+  alias TranslaTable.Fixture.Lang
+  alias TranslaTable.Fixture.Post
+
   alias TranslaTable.Fixture.Schema.Post, as: PostSchema
   alias TranslaTable.Fixture.Schema.PostTranslation, as: PostTranslationSchema
-  import TranslaTable.Query
 
   describe "Setup translations on schema" do
     defmodule PostContext do
