@@ -20,7 +20,10 @@ defmodule TranslaTable.MixProject do
       name: "TranslaTable",
       description: "TranslaTable is a library for helping create translation schemas.",
       docs: docs(),
-      package: package()
+      package: package(),
+      dialyzer: [
+        plt_file: {:no_warn, "priv/plts/project.plt"}
+      ]
     ]
   end
 
@@ -37,6 +40,7 @@ defmodule TranslaTable.MixProject do
     [
       {:ecto_sql, "~> 3.11"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:postgrex, "~> 0.17", only: [:test]},
       {:ex_doc, "~> 0.31", only: :dev, runtime: false}
     ]
