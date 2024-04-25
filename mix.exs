@@ -22,7 +22,8 @@ defmodule TranslaTable.MixProject do
       docs: docs(),
       package: package(),
       dialyzer: [
-        plt_file: {:no_warn, "priv/plts/project.plt"}
+        plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
+        plt_add_apps: [:ex_unit, :mix]
       ]
     ]
   end
